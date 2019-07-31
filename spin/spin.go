@@ -2,6 +2,12 @@ package spin
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/docker/go-connections/nat"
 
@@ -56,9 +62,13 @@ func SpinGeneric(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	}
 	pull, err := cl.ImagePull(ctx, c.Image+":"+c.Tag, types.ImagePullOptions{})
 	if err != nil {
-		return out, errors.Wrap(err, "Failed to pull image")
+		return out, errors.Wrap(err, "Failed to initiate pull image")
 	}
 	defer pull.Close()
+	_, err = io.Copy(ioutil.Discard, pull)
+	if err != nil {
+		return out, errors.Wrap(err, "Failed to pull image")
+	}
 	cc := container.Config{
 		Image: c.Image + ":" + c.Tag,
 	}
@@ -95,4 +105,24 @@ func SpinGeneric(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	out.IP = cInsp.NetworkSettings.IPAddress
 	out.Ports = cInsp.NetworkSettings.Ports
 	return out, nil
+}
+
+// buildName returns a suitable name for the container
+func buildName(svc string) string {
+	var name string
+	var dir string
+	wd, err := os.Getwd()
+	if err != nil {
+		dir = "global"
+	}
+	if dir != "global" {
+		dir, err = filepath.Abs(wd)
+		if err != nil {
+			dir = "global"
+		}
+		dir = filepath.Base(dir)
+	}
+
+	name = fmt.Sprintf("spinme-%s-%s-%d", dir, svc, time.Now().Unix())
+	return name
 }
