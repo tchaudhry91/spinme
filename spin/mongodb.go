@@ -1,8 +1,7 @@
 package spin
 
-// MongoDBSpinner is a spinner to spin up a dev mongodb container
-type MongoDBSpinner struct{}
+import "context"
 
-func (s *MongoDBSpinner) Spin(c *RunConfig) error {
-	return nil
+// SpinMongo spins a Mongo Container for the given settings
+func SpinMongo(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 }
