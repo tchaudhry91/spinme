@@ -55,15 +55,15 @@ func SpinGeneric(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 		return out, errors.Wrap(err, "Failed to Create Docker Client from Environment")
 	}
 	pull, err := cl.ImagePull(ctx, c.Image+":"+c.Tag, types.ImagePullOptions{})
-	defer pull.Close()
 	if err != nil {
 		return out, errors.Wrap(err, "Failed to pull image")
 	}
+	defer pull.Close()
 	cc := container.Config{
 		Image: c.Image + ":" + c.Tag,
 	}
 	if c.Expose {
-		var ports nat.PortSet
+		var ports = make(nat.PortSet)
 		for _, v := range c.ExposedPorts {
 			p, err := nat.NewPort("tcp", v)
 			if err != nil {
@@ -74,7 +74,7 @@ func SpinGeneric(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 		cc.ExposedPorts = ports
 	}
 	if c.Persist {
-		var vols map[string]struct{}
+		var vols = make(map[string]struct{})
 		for _, v := range c.PersistVols {
 			vols[v] = struct{}{}
 		}
