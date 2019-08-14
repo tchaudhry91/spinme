@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// SpinnerFrom returns the required SpinnerFunc from the service string
 func SpinnerFrom(service string) (SpinnerFunc, error) {
 	switch s := strings.ToLower(service); s {
 	case "mongo":

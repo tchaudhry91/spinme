@@ -30,15 +30,15 @@ type SpinConfig struct {
 	ExposedPorts []string
 	Persist      bool
 	PersistVols  []string
-	EnvIn        []string
+	Env          []string
 }
 
 // SpinOut is an output structure containing values from the recently spun service
 type SpinOut struct {
-	ID     string
-	IP     string
-	Ports  nat.PortMap
-	EnvOut map[string]string
+	ID    string
+	IP    string
+	Ports nat.PortMap
+	Env   []string
 }
 
 // Spinner is an interface to be implemented by service that need to be spun up
@@ -116,7 +116,7 @@ func Generic(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 		}
 		cc.Volumes = vols
 	}
-	cc.Env = c.EnvIn
+	cc.Env = c.Env
 	ccb, err := cl.ContainerCreate(ctx, &cc, &hc, nil, c.Name)
 	if err != nil {
 		return out, errors.Wrap(err, "Error Creating Container")
@@ -131,6 +131,7 @@ func Generic(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	out.ID = ccb.ID
 	out.IP = cInsp.NetworkSettings.IPAddress
 	out.Ports = cInsp.NetworkSettings.Ports
+	out.Env = cInsp.Config.Env
 	return out, nil
 }
 
