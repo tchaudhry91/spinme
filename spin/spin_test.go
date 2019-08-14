@@ -16,8 +16,15 @@ func TestSpinners(t *testing.T) {
 	}
 	cases := []TestCase{
 		{Name: "mongo-vanilla", Svc: "mongo"},
-		{Name: "mongo-vanilla-name", Svc: "mongo", Config: &spin.SpinConfig{
+		{Name: "mongo-with-name", Svc: "mongo", Config: &spin.SpinConfig{
 			Name: "mongo-test-vanilla",
+		}},
+		{Name: "postgres-vanilla", Svc: "postgres"},
+		{Name: "postgres-with-password", Svc: "postgres", Config: &spin.SpinConfig{
+			Name: "postgres-custom",
+			Env: []string{
+				"POSTGRES_PASSWORD=reallysecure",
+			},
 		}},
 	}
 	for _, c := range cases {

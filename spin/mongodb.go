@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-// Mongo spins a Mongo Container for the given settings
+// Mongo spins a Mongo Container with the given settings. Nil config uses defaults
 func Mongo(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	if c == nil {
 		c = &SpinConfig{}
