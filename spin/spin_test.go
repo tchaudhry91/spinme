@@ -23,7 +23,16 @@ func TestSpinners(t *testing.T) {
 		{Name: "postgres-with-password", Svc: "postgres", Config: &spin.SpinConfig{
 			Name: "postgres-custom",
 			Env: []string{
+				"POSTGRES_DB=newdb",
 				"POSTGRES_PASSWORD=reallysecure",
+			},
+		}},
+		{Name: "mysql-vanilla", Svc: "mysql"},
+		{Name: "mysql-with-env", Svc: "mysql", Config: &spin.SpinConfig{
+			Name: "mysql-custom",
+			Env: []string{
+				"MYSQL_ROOT_PASSWORD=pp22234222",
+				"MYSQL_DATABASE=newdb",
 			},
 		}},
 	}

@@ -21,5 +21,11 @@ func Mongo(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	c.ExposedPorts = []string{
 		"27017",
 	}
+	if len(c.Env) == 0 {
+		// default user used if none is provided
+		c.Env = append(c.Env, "MONGO_INITDB_ROOT_USERNAME=mongoadmin")
+		// default password used if none is provided
+		c.Env = append(c.Env, "MONGO_INITDB_ROOT_PASSWORD=password")
+	}
 	return Generic(ctx, c)
 }

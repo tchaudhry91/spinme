@@ -19,6 +19,8 @@ func Postgres(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	if len(c.Env) == 0 {
 		// default password used if none is provided
 		c.Env = append(c.Env, "POSTGRES_PASSWORD=password")
+		// default database used if none is provided
+		c.Env = append(c.Env, "POSTGRES_DB=testdb")
 	}
 	c.ExposedPorts = []string{
 		"5432",

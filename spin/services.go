@@ -12,6 +12,8 @@ func SpinnerFrom(service string) (SpinnerFunc, error) {
 		return Mongo, nil
 	case "postgres":
 		return Postgres, nil
+	case "mysql":
+		return MySQL, nil
 	default:
 		return Generic, errors.New("Failed to find given service")
 	}
