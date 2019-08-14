@@ -77,6 +77,7 @@ func init() {
 
 	err := upCmd.MarkFlagRequired("service")
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }

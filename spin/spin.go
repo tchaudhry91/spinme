@@ -79,6 +79,18 @@ func Slash(ctx context.Context, o *SpinOut) error {
 	return nil
 }
 
+func SlashID(ctx context.Context, id string) error {
+	cl, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return errors.Wrap(err, "Failed to Create Docker Client from Environment")
+	}
+	err = cl.ContainerRemove(ctx, id, types.ContainerRemoveOptions{Force: true})
+	if err != nil {
+		return errors.Wrap(err, "Failed to remove container")
+	}
+	return nil
+}
+
 // SpinGeneric is a generic spinner that assumes config input without modifying it
 func Generic(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	var out SpinOut
