@@ -7,7 +7,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
+
+	"github.com/phayes/freeport"
 
 	"github.com/docker/go-connections/nat"
 
@@ -24,12 +27,10 @@ type SpinConfig struct {
 	Image        string
 	Tag          string
 	Name         string
-	Expose       bool
 	ExposedPorts []string
 	Persist      bool
 	PersistVols  []string
 	EnvIn        []string
-	EnvRemap     map[string]string
 }
 
 // SpinOut is an output structure containing values from the recently spun service
@@ -52,6 +53,19 @@ func (f SpinnerFunc) Spin(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	return f(ctx, c)
 }
 
+// Slash is a function to remove the given container
+func Slash(ctx context.Context, o *SpinOut) error {
+	cl, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return errors.Wrap(err, "Failed to Create Docker Client from Environment")
+	}
+	err = cl.ContainerRemove(ctx, o.ID, types.ContainerRemoveOptions{Force: true})
+	if err != nil {
+		return errors.Wrap(err, "Failed to remove container")
+	}
+	return nil
+}
+
 // SpinGeneric is a generic spinner that assumes config input without modifying it
 func SpinGeneric(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	var out SpinOut
@@ -72,17 +86,29 @@ func SpinGeneric(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	cc := container.Config{
 		Image: c.Image + ":" + c.Tag,
 	}
-	if c.Expose {
-		var ports = make(nat.PortSet)
-		for _, v := range c.ExposedPorts {
-			p, err := nat.NewPort("tcp", v)
-			if err != nil {
-				return out, errors.Wrap(err, "Failed to parse expose port")
-			}
-			ports[p] = struct{}{}
+	hc := container.HostConfig{}
+	var ports = make(nat.PortSet)
+	var portMap = make(nat.PortMap)
+	for _, v := range c.ExposedPorts {
+		p, err := nat.NewPort("tcp", v)
+		if err != nil {
+			return out, errors.Wrap(err, "Failed to parse expose port")
 		}
-		cc.ExposedPorts = ports
+		ports[p] = struct{}{}
+		// Get a free port
+		fp, err := freeport.GetFreePort()
+		if err != nil {
+			return out, errors.Wrap(err, "Failed to find a free port to bind to")
+		}
+		portMap[p] = []nat.PortBinding{
+			nat.PortBinding{
+				HostIP:   "0.0.0.0",
+				HostPort: strconv.Itoa(fp),
+			},
+		}
 	}
+	hc.PortBindings = portMap
+	cc.ExposedPorts = ports
 	if c.Persist {
 		var vols = make(map[string]struct{})
 		for _, v := range c.PersistVols {
@@ -91,7 +117,7 @@ func SpinGeneric(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 		cc.Volumes = vols
 	}
 	cc.Env = c.EnvIn
-	ccb, err := cl.ContainerCreate(ctx, &cc, nil, nil, c.Name)
+	ccb, err := cl.ContainerCreate(ctx, &cc, &hc, nil, c.Name)
 	if err != nil {
 		return out, errors.Wrap(err, "Error Creating Container")
 	}
@@ -102,6 +128,7 @@ func SpinGeneric(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	if err != nil {
 		return out, errors.Wrap(err, "Error inspecting Started Container")
 	}
+	out.ID = ccb.ID
 	out.IP = cInsp.NetworkSettings.IPAddress
 	out.Ports = cInsp.NetworkSettings.Ports
 	return out, nil
