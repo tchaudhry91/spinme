@@ -12,6 +12,7 @@ func TestSpinners(t *testing.T) {
 		Name   string
 		Svc    string
 		Config *spin.SpinConfig
+		Error  bool
 	}
 	cases := []TestCase{
 		{Name: "mongo-vanilla", Svc: "mongo"},
@@ -21,7 +22,11 @@ func TestSpinners(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.Name, func(t *testing.T) {
-			s := spin.SpinnerFunc(spin.SpinMongo)
+			s, err := spin.SpinnerFrom(c.Svc)
+			if err != nil {
+				t.Errorf("Failed to find correct service")
+				t.FailNow()
+			}
 			out, err := s.Spin(context.Background(), c.Config)
 			if err != nil {
 				t.Errorf("Failed to spin: %s: %s", c.Name, err.Error())

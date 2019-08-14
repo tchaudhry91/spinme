@@ -67,7 +67,7 @@ func Slash(ctx context.Context, o *SpinOut) error {
 }
 
 // SpinGeneric is a generic spinner that assumes config input without modifying it
-func SpinGeneric(ctx context.Context, c *SpinConfig) (SpinOut, error) {
+func Generic(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	var out SpinOut
 	// Pull Image
 	cl, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())

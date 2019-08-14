@@ -4,8 +4,8 @@ import (
 	"context"
 )
 
-// SpinMongo spins a Mongo Container for the given settings
-func SpinMongo(ctx context.Context, c *SpinConfig) (SpinOut, error) {
+// Mongo spins a Mongo Container for the given settings
+func Mongo(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	if c == nil {
 		c = &SpinConfig{}
 	}
@@ -21,5 +21,5 @@ func SpinMongo(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	c.ExposedPorts = []string{
 		"27017",
 	}
-	return SpinGeneric(ctx, c)
+	return Generic(ctx, c)
 }
