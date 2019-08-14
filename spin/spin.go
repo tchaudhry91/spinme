@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"os"
-	"path/filepath"
 	"strconv"
 	"time"
 
@@ -137,20 +135,5 @@ func Generic(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 
 // buildName returns a suitable name for the container
 func buildName(svc string) string {
-	var name string
-	var dir string
-	wd, err := os.Getwd()
-	if err != nil {
-		dir = "global"
-	}
-	if dir != "global" {
-		dir, err = filepath.Abs(wd)
-		if err != nil {
-			dir = "global"
-		}
-		dir = filepath.Base(dir)
-	}
-
-	name = fmt.Sprintf("spinme-%s-%s-%d", dir, svc, time.Now().Unix())
-	return name
+	return fmt.Sprintf("spinme-%s-%d", svc, time.Now().Unix())
 }

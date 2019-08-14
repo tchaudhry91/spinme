@@ -14,6 +14,8 @@ func SpinnerFrom(service string) (SpinnerFunc, error) {
 		return Postgres, nil
 	case "mysql":
 		return MySQL, nil
+	case "redis":
+		return Redis, nil
 	default:
 		return Generic, errors.New("Failed to find given service")
 	}

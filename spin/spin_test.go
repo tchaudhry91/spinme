@@ -35,6 +35,7 @@ func TestSpinners(t *testing.T) {
 				"MYSQL_DATABASE=newdb",
 			},
 		}},
+		{Name: "redis-vanilla", Svc: "redis"},
 	}
 	for _, c := range cases {
 		t.Run(c.Name, func(t *testing.T) {

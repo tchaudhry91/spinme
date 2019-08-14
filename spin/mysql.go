@@ -23,7 +23,7 @@ func MySQL(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 		c.Env = append(c.Env, "MYSQL_DATABASE=testdb")
 	}
 	c.ExposedPorts = []string{
-		"5432",
+		"3306",
 	}
 	return Generic(ctx, c)
 }
