@@ -18,9 +18,11 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
+
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 	"github.com/tchaudhry91/spinme/spin"
-	"os"
 )
 
 var (
@@ -52,7 +54,7 @@ var upCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println(out)
+		spew.Dump(out)
 	},
 }
 

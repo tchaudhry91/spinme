@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/Microsoft/go-winio v0.4.13 // indirect
 	github.com/containerd/containerd v1.2.7 // indirect
+	github.com/davecgh/go-spew v1.1.1
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v0.7.3-0.20190731001754-589f1dad8dad
 	github.com/docker/go-connections v0.4.0
