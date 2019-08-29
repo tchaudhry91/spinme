@@ -48,10 +48,11 @@ type SpinConfig struct {
 
 // SpinOut is an output structure containing values from the recently spun service
 type SpinOut struct {
-	ID    string
-	IP    string
-	Ports nat.PortMap
-	Env   []string
+	ID      string
+	IP      string
+	Service string
+	Ports   nat.PortMap
+	Env     []string
 }
 
 // Spinner is an interface to be implemented by service that need to be spun up

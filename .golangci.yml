@@ -1,0 +1,9 @@
+run:
+  concurrency: 4
+  deadline: 1m
+  issue-exit-code: 1
+  tests: true
+
+linters-settings:
+  errcheck:
+    ignore: fmt:.*,github.com/go-kit/kit/log:.*,github.com/boltdb/bolt:.*

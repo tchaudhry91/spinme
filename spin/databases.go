@@ -42,7 +42,9 @@ func Mongo(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 		// default password used if none is provided
 		c.Env = append(c.Env, "MONGO_INITDB_ROOT_PASSWORD=password")
 	}
-	return Generic(ctx, c)
+	o, err := Generic(ctx, c)
+	o.Service = "mongo"
+	return o, err
 }
 
 // MySQL spins a MySQL container with the given settings. Nil config uses defaults
@@ -68,7 +70,9 @@ func MySQL(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	c.ExposedPorts = []string{
 		"3306",
 	}
-	return Generic(ctx, c)
+	o, err := Generic(ctx, c)
+	o.Service = "mysql"
+	return o, err
 }
 
 // Postgres spins a Postgres container with the given settings. Nil config uses defaults
@@ -94,7 +98,9 @@ func Postgres(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	c.ExposedPorts = []string{
 		"5432",
 	}
-	return Generic(ctx, c)
+	o, err := Generic(ctx, c)
+	o.Service = "postgres"
+	return o, err
 }
 
 // Redis spins a Redis container with the given settings. Nil config uses defaults.
@@ -114,5 +120,7 @@ func Redis(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	c.ExposedPorts = []string{
 		"6379",
 	}
-	return Generic(ctx, c)
+	o, err := Generic(ctx, c)
+	o.Service = "redis"
+	return o, err
 }

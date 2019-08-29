@@ -54,6 +54,12 @@ var upCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		err = storeConfig(*db, out)
+		if err != nil {
+			fmt.Println(err)
+			spew.Dump(out)
+			os.Exit(1)
+		}
 		spew.Dump(out)
 	},
 }

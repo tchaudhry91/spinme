@@ -18,9 +18,10 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/spf13/cobra"
 	"github.com/tchaudhry91/spinme/spin"
-	"os"
 )
 
 var id string
@@ -31,6 +32,11 @@ var downCmd = &cobra.Command{
 	Short: "Bring down the given container",
 	Run: func(cmd *cobra.Command, args []string) {
 		err := spin.SlashID(context.Background(), id)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		err = removeConfig(*db, id)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

@@ -4,12 +4,14 @@ go 1.12
 
 require (
 	github.com/Microsoft/go-winio v0.4.13 // indirect
+	github.com/boltdb/bolt v1.3.1
 	github.com/containerd/containerd v1.2.7 // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v0.7.3-0.20190731001754-589f1dad8dad
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/go-check/check v0.0.0-20180628173108-788fd7840127 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/morikuni/aec v0.0.0-20170113033406-39771216ff4c // indirect
