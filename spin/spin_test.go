@@ -50,7 +50,7 @@ func TestSpinners(t *testing.T) {
 				t.FailNow()
 			}
 			t.Log(out)
-			t.Log("Spun succesfully, slashing")
+			t.Log("Spun successfully, slashing")
 			err = spin.Slash(context.Background(), &out)
 			if err != nil {
 				t.Errorf("Failed to slash: %s: %s", out.ID, err.Error())

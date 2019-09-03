@@ -48,6 +48,7 @@ type Spinner interface {
 // SpinnerFunc is a wrapper that allows using functions as Spinners
 type SpinnerFunc func(ctx context.Context, c *SpinConfig) (SpinOut, error)
 
+// Spin is the implementation for the Spinner interface
 func (f SpinnerFunc) Spin(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	return f(ctx, c)
 }
@@ -65,6 +66,7 @@ func Slash(ctx context.Context, o *SpinOut) error {
 	return nil
 }
 
+// SlashID is a function to slash a given container id
 func SlashID(ctx context.Context, id string) error {
 	cl, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -77,7 +79,7 @@ func SlashID(ctx context.Context, id string) error {
 	return nil
 }
 
-// SpinGeneric is a generic spinner that assumes config input without modifying it
+// Generic is a generic spinner that assumes config input without modifying it
 func Generic(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	var out SpinOut
 	// Pull Image
