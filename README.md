@@ -1,5 +1,6 @@
 # SpinMe!
 [![Go Report Card](https://goreportcard.com/badge/github.com/tchaudhry91/spinme)](https://goreportcard.com/report/github.com/tchaudhry91/spinme)
+[![CI](https://github.com/tchaudhry91/spinme/workflows/Continuous%20Integration%20Workflow/badge.svg)](https://github.com/tchaudhry91/spinme)
 
 A simple wrapper around Docker to quickly run "spin" up supporting containers such as databases for development.
 SpinMe can be invoked via the CLI binary or used as a library straight from your Go code.
