@@ -114,7 +114,7 @@ func Generic(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 			return out, errors.Wrap(err, "Failed to find a free port to bind to")
 		}
 		portMap[p] = []nat.PortBinding{
-			nat.PortBinding{
+			{
 				HostIP:   "0.0.0.0",
 				HostPort: strconv.Itoa(fp),
 			},
