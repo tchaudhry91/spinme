@@ -51,7 +51,7 @@ The password wherever needed is set to `password`. Once the container is up, you
 
 This is a very early release, the eventual goal is to be able to use this system with CIs, to allow stuff like `go test` to create containers for databases on the fly and clean them up.
 
-[GoDoc] (https://godoc.org/github.com/tchaudhry91/spinme/spin)
+[GoDoc](https://godoc.org/github.com/tchaudhry91/spinme/spin)
 
 
 ## Contributing
