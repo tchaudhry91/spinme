@@ -19,7 +19,7 @@ func ExamplePostgres() {
 	}
 	defer spin.SlashID(context.Background(), out.ID)
 	// Give postgres a couple of seconds to boot-up, sadly there is no "ready" check yet
-	time.Sleep(2 * time.Second)
+	time.Sleep(5 * time.Second)
 	var hostEp string
 	var ok bool
 	// Grab the host endpoint mapping for the container
