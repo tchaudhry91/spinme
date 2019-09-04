@@ -18,9 +18,9 @@ var statusCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Printf("ID\tIP\tService\tPorts\n")
+		fmt.Printf("ID\tIP\tService\tEndpoints\n")
 		for _, o := range oo {
-			fmt.Printf("%s\t%s\t%s\t%v\n", o.ID, o.IP, o.Service, o.Ports)
+			fmt.Printf("%s\t%s\t%s\t%v\n", o.ID, o.IP, o.Service, o.Endpoints)
 		}
 	},
 }

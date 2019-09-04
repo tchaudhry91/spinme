@@ -44,7 +44,8 @@ Admin users are as follows:
 - Mysql = `root`
 - Mongo = `mongoadmin`
 
-The password wherever needed is set to `password`. Once the container is up, you may modify it as required. Future versions will support supplying root passwords at create time (PRs welcome!)
+The password wherever needed is set to `password`. Once the container is up, you may modify it as required. The environment variables for the images to override this can also be set via the command line:
+e.g `--env PG_PASSWORD=1231`
 
 
 ## Library

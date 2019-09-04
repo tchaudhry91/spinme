@@ -33,11 +33,11 @@ type SpinConfig struct {
 
 // SpinOut is an output structure containing values from the recently spun service
 type SpinOut struct {
-	ID      string
-	IP      string
-	Service string
-	Ports   nat.PortMap
-	Env     []string
+	ID        string
+	IP        string
+	Service   string
+	Endpoints map[string]string
+	Env       []string
 }
 
 // Spinner is an interface to be implemented by service that need to be spun up
@@ -143,7 +143,12 @@ func Generic(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	}
 	out.ID = ccb.ID
 	out.IP = cInsp.NetworkSettings.IPAddress
-	out.Ports = cInsp.NetworkSettings.Ports
+	out.Endpoints = make(map[string]string)
+	for k, pm := range cInsp.NetworkSettings.Ports {
+		for _, pb := range pm {
+			out.Endpoints[fmt.Sprintf("%s/%s", k.Port(), k.Proto())] = fmt.Sprintf("%s:%s", pb.HostIP, pb.HostPort)
+		}
+	}
 	out.Env = cInsp.Config.Env
 	return out, nil
 }
