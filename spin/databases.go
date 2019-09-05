@@ -2,6 +2,9 @@ package spin
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"strings"
 )
 
 // Mongo spins a Mongo Container with the given settings. Nil config uses defaults
@@ -60,6 +63,19 @@ func MySQL(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	return o, err
 }
 
+// MySQLConnString returns the sql open connection string from the spun container
+func MySQLConnString(out SpinOut) (connStr string, err error) {
+	var hostEp string
+	var ok bool
+
+	// Grab the host endpoint mapping for the container
+	if hostEp, ok = out.Endpoints["3306/tcp"]; !ok {
+		return "", errors.New("Failed to find proper port binding")
+	}
+	connStr = fmt.Sprintf("root:%s@tcp(%s)/%s", lookupEnv("MYSQL_ROOT_PASSWORD", out.Env), hostEp, lookupEnv("MYSQL_DATABASE", out.Env))
+	return connStr, nil
+}
+
 // Postgres spins a Postgres container with the given settings. Nil config uses defaults
 func Postgres(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	if c == nil {
@@ -86,6 +102,21 @@ func Postgres(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	o, err := Generic(ctx, c)
 	o.Service = "postgres"
 	return o, err
+}
+
+// PostgresConnString returns the sql open connection string from the spun container
+func PostgresConnString(out SpinOut) (connStr string, err error) {
+	var hostEp string
+	var ok bool
+
+	// Grab the host endpoint mapping for the container
+	if hostEp, ok = out.Endpoints["5432/tcp"]; !ok {
+		return "", errors.New("Failed to find proper port binding")
+	}
+	// pq needs an independent port, not the entire endpoint
+	ep := strings.Split(hostEp, ":")
+	connStr = fmt.Sprintf("user=postgres password=%s dbname=%s port=%s sslmode=disable", lookupEnv("POSTGRES_PASSWORD", out.Env), lookupEnv("POSTGRES_DB", out.Env), ep[len(ep)-1])
+	return connStr, nil
 }
 
 // Redis spins a Redis container with the given settings. Nil config uses defaults.

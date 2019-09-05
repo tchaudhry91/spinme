@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/phayes/freeport"
@@ -156,4 +157,20 @@ func Generic(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 // buildName returns a suitable name for the container
 func buildName(svc string) string {
 	return fmt.Sprintf("spinme-%s-%d", svc, time.Now().Unix())
+}
+
+// lookupEnv returns the value (blank for not found) in the containers environment
+func lookupEnv(key string, env []string) string {
+	for _, e := range env {
+		esplit := strings.Split(e, "=")
+		if len(esplit) < 2 {
+			continue
+		}
+		k := esplit[0]
+		v := esplit[1]
+		if k == key {
+			return v
+		}
+	}
+	return ""
 }
