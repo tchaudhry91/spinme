@@ -159,8 +159,8 @@ func buildName(svc string) string {
 	return fmt.Sprintf("spinme-%s-%d", svc, time.Now().Unix())
 }
 
-// lookupEnv returns the value (blank for not found) in the containers environment
-func lookupEnv(key string, env []string) string {
+// LookupEnv returns the value (blank for not found) in the containers environment
+func LookupEnv(key string, env []string) string {
 	for _, e := range env {
 		esplit := strings.Split(e, "=")
 		if len(esplit) < 2 {

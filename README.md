@@ -5,11 +5,60 @@
 A simple wrapper around Docker to quickly run "spin" up supporting containers such as databases for development.
 SpinMe can be invoked via the CLI binary or used as a library straight from your Go code.
 
+## Library
+
+The primary goal of this library is to eliminate the need to externally spin up testing databases (esp while running tests on a CI system). 
+You can create live docker containers straight from your go test files, making `go test` independent. This allows you to test against real databases, without having to mock anything.
+
+See examples for Postgres/MySQL/Mongo/Redis in the [GoDoc](https://godoc.org/github.com/tchaudhry91/spinme/spin)
+
+Sample Usage:
+```
+package main
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/tchaudhry91/spinme/spin"
+)
+
+func main() {
+	out, err := spin.MySQL(context.Background(), nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer spin.SlashID(context.Background(), out.ID)
+	// Give mysql a minute to boot-up, sadly there is no "ready" check yet
+	time.Sleep(1 * time.Minute)
+	connStr, err := spin.MySQLConnString(out)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	db, err := sql.Open("mysql", connStr)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+```
+
 ## CLI
 
 Use this for daily use to start/stop/view your containers.
 
-Usage: 
+### CLI Usage: 
 ```
 spinme -h
 SpinMe is a wrapper around docker to run common applications.
@@ -46,13 +95,6 @@ Admin users are as follows:
 
 The password wherever needed is set to `password`. Once the container is up, you may modify it as required. The environment variables for the images to override this can also be set via the command line:
 e.g `--env PG_PASSWORD=1231`
-
-
-## Library
-
-This is a very early release, the eventual goal is to be able to use this system with CIs, to allow stuff like `go test` to create containers for databases on the fly and clean them up.
-
-[GoDoc](https://godoc.org/github.com/tchaudhry91/spinme/spin)
 
 
 ## Contributing

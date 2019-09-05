@@ -10,6 +10,11 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"github.com/go-redis/redis"
 )
 
 func ExamplePostgres() {
@@ -68,4 +73,65 @@ func ExampleMySQL() {
 	}
 	fmt.Println("Connected!")
 	//Output: Connected!
+}
+
+func ExampleMongo() {
+	out, err := spin.Mongo(context.Background(), nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer spin.SlashID(context.Background(), out.ID)
+	// Give mongo a few seconds to boot-up, sadly there is no "ready" check yet
+	time.Sleep(10 * time.Second)
+	connStr, err := spin.MongoConnString(out)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	client, err := mongo.NewClient(options.Client().ApplyURI(connStr))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = client.Connect(context.Background())
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer client.Disconnect(context.Background())
+	err = client.Ping(context.Background(), nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Connected!")
+	// Output: Connected!
+}
+
+func ExampleRedis() {
+	out, err := spin.Redis(context.Background(), nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer spin.SlashID(context.Background(), out.ID)
+	// Give redis a few seconds to boot-up, sadly there is no "ready" check yet
+	time.Sleep(10 * time.Second)
+	connStr, err := spin.RedisConnString(out)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	client := redis.NewClient(&redis.Options{
+		Addr: connStr,
+	})
+	pong, err := client.Ping().Result()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(pong)
+	// Output: PONG
 }

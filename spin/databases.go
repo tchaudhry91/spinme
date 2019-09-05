@@ -35,6 +35,19 @@ func Mongo(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	return o, err
 }
 
+// MongoConnString returns the connection string from the spun mongo container
+func MongoConnString(out SpinOut) (connStr string, err error) {
+	var hostEp string
+	var ok bool
+
+	// Grab the host endpoint mapping for the container
+	if hostEp, ok = out.Endpoints["27017/tcp"]; !ok {
+		return "", errors.New("Failed to find proper port binding")
+	}
+	connStr = fmt.Sprintf("mongodb://%s:%s@%s", LookupEnv("MONGO_INITDB_ROOT_USERNAME", out.Env), LookupEnv("MONGO_INITDB_ROOT_PASSWORD", out.Env), hostEp)
+	return connStr, nil
+}
+
 // MySQL spins a MySQL container with the given settings. Nil config uses defaults
 func MySQL(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	if c == nil {
@@ -72,7 +85,7 @@ func MySQLConnString(out SpinOut) (connStr string, err error) {
 	if hostEp, ok = out.Endpoints["3306/tcp"]; !ok {
 		return "", errors.New("Failed to find proper port binding")
 	}
-	connStr = fmt.Sprintf("root:%s@tcp(%s)/%s", lookupEnv("MYSQL_ROOT_PASSWORD", out.Env), hostEp, lookupEnv("MYSQL_DATABASE", out.Env))
+	connStr = fmt.Sprintf("root:%s@tcp(%s)/%s", LookupEnv("MYSQL_ROOT_PASSWORD", out.Env), hostEp, LookupEnv("MYSQL_DATABASE", out.Env))
 	return connStr, nil
 }
 
@@ -115,7 +128,7 @@ func PostgresConnString(out SpinOut) (connStr string, err error) {
 	}
 	// pq needs an independent port, not the entire endpoint
 	ep := strings.Split(hostEp, ":")
-	connStr = fmt.Sprintf("user=postgres password=%s dbname=%s port=%s sslmode=disable", lookupEnv("POSTGRES_PASSWORD", out.Env), lookupEnv("POSTGRES_DB", out.Env), ep[len(ep)-1])
+	connStr = fmt.Sprintf("user=postgres password=%s dbname=%s port=%s sslmode=disable", LookupEnv("POSTGRES_PASSWORD", out.Env), LookupEnv("POSTGRES_DB", out.Env), ep[len(ep)-1])
 	return connStr, nil
 }
 
@@ -139,4 +152,16 @@ func Redis(ctx context.Context, c *SpinConfig) (SpinOut, error) {
 	o, err := Generic(ctx, c)
 	o.Service = "redis"
 	return o, err
+}
+
+// RedisConnString returns the address of the redis container
+func RedisConnString(out SpinOut) (connString string, err error) {
+	var hostEp string
+	var ok bool
+
+	// Grab the host endpoint mapping for the container
+	if hostEp, ok = out.Endpoints["6379/tcp"]; !ok {
+		return "", errors.New("Failed to find proper port binding")
+	}
+	return hostEp, nil
 }
